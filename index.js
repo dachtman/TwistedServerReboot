@@ -1,15 +1,21 @@
-require('custom-env').env()
-const Discord = require("discord.js")
-const client = new Discord.Client({intents:['GUILDS','GUILD_MESSAGES','DIRECT_MESSAGES']})
+require("dotenv").config();
+const Docker = require("dockerode");
+const Discord = require("discord.js");
+const client = new Discord.Client({
+  intents: ["GUILDS", "GUILD_MESSAGES", "DIRECT_MESSAGES"]
+})
+const docker = new Docker({host:process.env.DOCKER_IP});
+docker.listContainers((err,containers)=>{
+  containers.forEach((container) => {
+    console.log(container.id);
+  })
+})
 
 client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`)
 })
 
-client.on("message", msg => {
-  if (msg.content === "ping") {
-    msg.reply("pong");
-  }
+client.on("messageCreate", msg => {
+  
 })
-console.log(process.env.TOKEN)
-client.login(process.env.TOKEN)
+client.login(process.env.TOKEN);
