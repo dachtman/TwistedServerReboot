@@ -1,0 +1,7 @@
+{
+    "docker_error" : "Something terrible happened!!! Blame the person next to you and run away!!!",
+    "no_containers" : "Sorry no containers for you. If you ask nicely maybe someone will take pity on you",
+    "cant_do_that" : "No no no, you cant do this",
+    "WRONG" : "SOMETHING WENT WRONG",
+    "NO_ACTION" : "No action has been selectd"
+}

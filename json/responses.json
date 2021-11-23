@@ -1,0 +1,9 @@
+{
+    "HEY":"HEY!!!",
+    "VOTE_INSTRUCTIONS":"needs to be restarted please react with 👍 to vote for a restart or 👎 to vote no for the restart",
+    "VOTE_AGREEMENT" : "Congrats you all agreed, Restart will start immediatley",
+    "NO_RESTART" : "Sorry, No restart for you!!!",
+    "RESTARTED" : "has successfully been restarted",
+    "STARTED" : "has successfully been started",
+    "STOPPED" : "has successfully been stopped"
+}
