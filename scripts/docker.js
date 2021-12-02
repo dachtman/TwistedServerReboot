@@ -27,19 +27,18 @@ function getContainers() {
 					... container
 				};
 			});
-			resolve({ containers, docker });
+			resolve(containers);
 		}).catch(reject);
 	});
 }
 
 function getContainer(containerName) {
 	return new Promise((resolve, reject) => {
-		getContainers().then(({ containers, docker }) => {
-			containers = containers.filter(({ Names:names }) => {
-				const name = names.toString().replace(/\//g, '');
+		getContainers().then((containers) => {
+			containers = containers.filter(({ name }) => {
 				return containerName.toString().toLowerCase() === name.toLowerCase();
 			});
-			resolve({ container:containers[0], docker });
+			resolve(containers[0]);
 		}).catch(reject);
 	});
 }
@@ -61,7 +60,7 @@ function getAllMyContainers(user) {
 function getMyContainers(user, requiredRole = PLEEB, ignoreSuperAdmins) {
 	return new Promise((resolve, reject) => {
 		getContainers()
-			.then(({ containers }) => {
+			.then((containers) => {
 				resolve(containers.filter(({ name }) => {
 					return canUserDoThis(user, name, requiredRole, ignoreSuperAdmins);
 				}));
@@ -83,7 +82,8 @@ function getContainersInfo(author) {
 function takeActionOnContainer(containerName, action) {
 	return new Promise((resolve, reject) => {
 		if (action) {
-			getContainer(containerName).then(({ container:{ Id:id }, docker }) => {
+			getContainer(containerName).then(({ Id:id }) => {
+				const docker = getDocker();
 				docker.getContainer(id)[action]().then(() => {
 					resolve(containerName);
 				}).catch(reject);

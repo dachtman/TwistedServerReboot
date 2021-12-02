@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { ROLES: { ADMIN }, isAdmin } = require('../scripts/users.js');
-const { getSelectMenu, createOptions } = require('../scripts/message');
+const { sendInteractionSelectMenuReply } = require('../scripts/message');
 const { DOCKER_ACTIONS : { RESTART }, takeActionOnContainer, getMyContainers } = require('../scripts/docker.js');
 const name = 'forcerestart';
 const description = 'Force restart of a docker container, does not require a vote to start';
@@ -11,24 +11,17 @@ function execute(interaction) {
 	return new Promise((resolve, reject) => {
 		const { member:author, user:{ id:authorID }, channel } = interaction;
 		if (isAdmin(author)) {
-			getMyContainers(author, ADMIN).then((containers) => {
-				interaction.reply(
-					getSelectMenu('containers',	containers.map(createOptions)))
+			getMyContainers(author, ADMIN)
+			.then((containers) => {
+				sendInteractionSelectMenuReply(interaction, containers)
+				.then(({ values }) => {
+					takeActionOnContainer(values, RESTART)
 					.then(() => {
-						const filter = i => {
-							i.deferUpdate();
-							return i.user.id === authorID;
-						};
-						channel.awaitMessageComponent({ filter, componentType:'SELECT_MENU', time: 60000, errors:['time'] })
-							.then(({ values }) => {
-								takeActionOnContainer(values, RESTART)
-									.then(() => {
-										resolve(`Restart started on ${values}`);
-									})
-									.catch(reject);
-							})
-							.catch(reject);
-					});
+						resolve(`Restart started on ${values}`);
+					})
+					.catch(reject);
+				})
+				.catch(reject);
 			});
 		}
 		else {

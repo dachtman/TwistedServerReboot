@@ -25,6 +25,9 @@ function canUserDoThis(user, containerName, roleRequired = ROLES.ADMIN, ignoreSu
 function addUser(user, containerName, roles, assignedRole = ROLES.PLEEB) {
 	// todo
 	// Look up container name before hand to verify it exist
+	if (assignedRole === ROLES.ADMIN) {
+		removeUser(user, containerName, roles);
+	}
 	const roleName = getRoleName(containerName, assignedRole);
 	const { cache } = roles;
 	const roleExist = cache.find(r => r.name === roleName);

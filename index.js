@@ -1,7 +1,7 @@
 require('dotenv').config();
 const { readdirSync } = require('fs');
 const { Client, Intents, Collection } = require('discord.js');
-const { writeToLogFile } = require('./scripts/file.js');
+const { sendResults } = require('./scripts/message');
 const client = new Client({
 	intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.DIRECT_MESSAGES, Intents.FLAGS.DIRECT_MESSAGE_REACTIONS, Intents.FLAGS.GUILD_MESSAGE_REACTIONS]
 });
@@ -24,43 +24,12 @@ client.on('interactionCreate', (interaction) => {
 		const command = client.commands.get(interaction.commandName);
 		if (!command) return;
 		command.execute(interaction)
-			.then((response) => {
-				writeToLogFile(interaction.user.username, `${interaction.commandName} ${response}`);
-				if (interaction.replied) {
-					if (!interaction.ephemeral) {
-						interaction.channel.send({ content:response });
-						interaction.deleteReply();
-					}
-					else {
-						interaction.editReply({ content:response, components:[] });
-						// console.log(interaction);
-					}
-				}
-				else {
-					interaction.reply({ content: response });
-				}
-			})
-			.catch((err) => {
-				writeToLogFile(interaction.user.username, `${interaction.commandName} ${err}`);
-				const msgObj = { content: `Failure!!! ${err}`, components: [] };
-				if (interaction.replied) {
-					interaction.channel.send(msgObj);
-					if (!interaction.ephemeral) {
-						interaction.deleteReply();
-					}
-					else {
-						interaction.editReply(msgObj);
-					}
-				}
-				else {
-					interaction.reply(msgObj);
-				}
-			});
-	}
-
-	if (interaction.isSelectMenu()) {
-		// console.log(interaction.values);
-		//
+		.then((response) => {
+			sendResults(interaction, response);
+		})
+		.catch((err) => {
+			sendResults(interaction, err, 'Failure');
+		});
 	}
 });
 client.login(process.env.TOKEN);

@@ -12,10 +12,10 @@ function execute(interaction) {
 	return new Promise((resolve, reject) => {
 		const { member:author } = interaction;
 		getContainersInfo(author)
-			.then((containers) => {
-				resolve({ embeds : [getListDockerEmbed(containers)] });
-			})
-			.catch(reject);
+		.then((containers) => {
+			resolve({ embeds : [getListDockerEmbed(containers)], ephemeral: true });
+		})
+		.catch(reject);
 	});
 }
 
