@@ -1,13 +1,12 @@
 {
   "139012589807075328": {
     "displayName": "twistedsistem",
-    "SUPER_ADMIN": true,
-    "code-server": "pleeb"
+    "SUPER_ADMIN": true
   },
   "146824775027654656": {
     "displayName": "dachtman",
     "SUPER_ADMIN": true,
     "satisfactory-dnj": "admin",
-    "code-server": "admin"
+    "code-server": "pleeb"
   }
 }

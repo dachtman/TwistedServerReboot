@@ -1,0 +1,9 @@
+{
+    "script" : "npm run start",
+    "watch" : true,
+    "ignore_watch" : ["log","node_modules"],
+    "watch_options":{
+        "followSymLinks":true
+    },
+    "name":"TwistedServerReboot"
+}

@@ -5,7 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "npm run"
+    "start": "node .",
+    "deploy" : "node deploy-commands.js",
+    "lint": "eslint .",
+    "pm2" : "pm2 start npm --name \"twistedserverreboot\" -- start --watch --ignore-watch=\"node_modules, log\""
   },
   "repository": {
     "type": "git",
@@ -22,6 +25,13 @@
     "dockerode": "^3.3.1",
     "dotenv": "^10.0.0",
     "moment": "^2.29.1",
-    "underscore": "^1.13.1"
+    "underscore": "^1.13.1",
+    "wokcommands": "^1.5.3"
+  },
+  "devDependencies": {
+    "@discordjs/builders": "^0.8.2",
+    "@discordjs/rest": "^0.1.0-canary.0",
+    "discord-api-types": "^0.24.0",
+    "eslint": "^8.3.0"
   }
 }

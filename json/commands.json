@@ -1,0 +1,114 @@
+[{
+    "name" : "LIST",
+    "command_prompts" : ["listcontainers","listdockers","lc","ld"],
+    "description" : "List available docker containers",
+    "role_required" : "PLEEB",
+    "library" : "list.js",
+    "function" : "getList"
+},{
+    "name" : "FORCE_RESTART",
+    "command_prompts":["forcerestart"],
+    "description":"Force restart of a docker container, does not require a vote to start",
+    "options" : [{
+        "type" : "addStringOption",
+        "name" : "container",
+        "description" : "Container to be restarted",
+        "required" : true
+    }],
+    "role_required":"SUPER_ADMIN",
+    "library":"restart.js",
+    "function":"forceRestart"
+},{
+    "name" : "RESTART",
+    "command_prompts":["restart"],
+    "description":"Restarts a docker container, requires a vote of all participants of a docker container",
+    "options" : [{
+        "type" : "addStringOption",
+        "name" : "container",
+        "description" : "Container to be restarted",
+        "required" : true
+    }],
+    "role_required":"ADMIN",
+    "library":"restart.js",
+    "function":"restart"
+},{
+    "name" : "START",
+    "command_prompts":["start"],
+    "description":"Starts a docker container",
+    "options" : [{
+        "type" : "addStringOption",
+        "name" : "container",
+        "description" : "Container to be restarted",
+        "required" : true
+    }],
+    "role_required":"ADMIN",
+    "library":"start.js",
+    "function":"startDocker"
+},{
+    "name" : "STOP",
+    "command_prompts":["stop"],
+    "description":"Stops a docker container",
+    "options" : [{
+        "type" : "addStringOption",
+        "name" : "container",
+        "description" : "Container to be restarted",
+        "required" : true
+    }],
+    "role_required":"ADMIN",
+    "library":"stop.js",
+    "function":"stopDocker"
+},{
+    "name" : "ASSIGN",
+    "command_prompts":["assign"],
+    "description":"Assigns user(s) to a docker container with the applicable role",
+    "options" : [{
+        "type" : "addStringOption",
+        "name" : "container",
+        "description" : "Container to be restarted",
+        "required" : true
+    },{
+        "type" : "addUserOption",
+        "name" : "user",
+        "description" : "A user",
+        "required" : true
+    },{
+        "type" : "addStringOption",
+        "name" : "role",
+        "description" : "A role",
+        "choices" : [{
+            "name" : "Pleeb",
+            "value" : "PLEEB"
+        },{
+            "name" : "Admin",
+            "value" : "ADMIN"
+        }]
+    }],
+    "role_required":"ADMIN",
+    "library":"users.js",
+    "function":"assignUsers"
+},{
+    "name" : "UNASSIGN",
+    "command_prompts":["unassign"],
+    "description":"Removes user(s) from a assigned docker container",
+    "options" : [{
+        "type" : "addStringOption",
+        "name" : "container",
+        "description" : "Container to be restarted",
+        "required" : true
+    },{
+        "type" : "addUserOption",
+        "name" : "user",
+        "description" : "A user",
+        "required" : true
+    }],
+    "role_required":"ADMIN",
+    "library":"users.js",
+    "function":"unassignUsers"
+},{
+    "name" : "OPTIONS",
+    "command_prompts":["options"],
+    "description":"Shows the available options that a user can perform with this bot",
+    "role_required":"PLEEB",
+    "library":"",
+    "function":"getOptions"
+}]
