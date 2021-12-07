@@ -1,5 +1,6 @@
 const { MessageActionRow, MessageSelectMenu, MessageEmbed, MessageButton } = require('discord.js');
 const { writeToLogFile } = require('./file');
+const { alphabeticalSortContainers } = require('./docker');
 const CONTAINER_NAME = 'container';
 const SELECT_MENU = 'SELECT_MENU';
 const TIME = 60000;
@@ -64,7 +65,7 @@ function sendInteractionSelectMenuReply(interaction, containers) {
 	return new Promise((resolve, reject) => {
 		const { channel, user:{ id:authorID } } = interaction;
 		if (containers.length !== 0) {
-			interaction.reply(getSelectMenu(CONTAINER_NAME, containers.sort(alphabeticalSort).map(createOptions)))
+			interaction.reply(getSelectMenu(CONTAINER_NAME, containers.sort(alphabeticalSortContainers).map(createOptions)))
 				.then(() => {
 					// TODO
 					// console.log(arguments);
@@ -99,12 +100,6 @@ function sendResults(interaction, response, prefix) {
 	else {
 		interaction.reply(response);
 	}
-}
-
-function alphabeticalSort({ name:aName }, { name:bName }) {
-	aName = aName.toLowerCase();
-	bName = bName.toLowerCase();
-	return aName > bName ? 1 : -1;
 }
 
 

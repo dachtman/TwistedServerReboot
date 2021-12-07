@@ -15,16 +15,20 @@ function isAdmin(user) {
 	return user.permissions.has(ADMINISTRATOR);
 }
 
-function canUserDoThis(user, containerName, roleRequired = ROLES.ADMIN, ignoreSuperAdmins = false) {
-	if (isAdmin && !ignoreSuperAdmins) {
+function canUserDoThis(user, containerName, ignoreSuperAdmins = false, roleRequired = ROLES.ADMIN) {
+	if (isAdmin(user) && !ignoreSuperAdmins) {
 		return true;
 	}
 	return user.roles.cache.some(r => r.name === getRoleName(containerName, roleRequired));
 }
 
+function canUserAccessContainer(containerName, { id }, { message: { guild: { roles: { cache } } } }) {
+	return cache
+		.filter(role => role.name.startsWith(containerName))
+		.some(role => role.members.get(id));
+}
+
 function addUser(user, containerName, roles, assignedRole = ROLES.PLEEB) {
-	// todo
-	// Look up container name before hand to verify it exist
 	if (assignedRole === ROLES.ADMIN) {
 		removeUser(user, containerName, roles);
 	}
@@ -41,6 +45,8 @@ function addUser(user, containerName, roles, assignedRole = ROLES.PLEEB) {
 	return;
 }
 
+// TODO
+// Double check that admin is not removing admin
 function removeUser(user, containerName, { cache }) {
 	[getRoleName(containerName, ROLES.ADMIN), getRoleName(containerName, ROLES.PLEEB)].forEach((roleName) => {
 		const roleExist = cache.find(r => r.name === roleName);
@@ -71,5 +77,6 @@ module.exports = {
 	addUser,
 	removeUser,
 	isAdmin,
-	getRoleName
+	getRoleName,
+	canUserAccessContainer
 };

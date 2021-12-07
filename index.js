@@ -7,7 +7,7 @@ const client = new Client({
 });
 client.commands = new Collection();
 const commandFiles = readdirSync('./commands').filter(file => file.endsWith('.js'));
-commandFiles.forEach((file) => {
+commandFiles.filter((file) => file !== 'getfile.js').forEach((file) => {
 	const command = require(`./commands/${file}`);
 	client.commands.set(command.data.name, command);
 });

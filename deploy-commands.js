@@ -5,7 +5,7 @@ const { Routes } = require('discord-api-types/v9');
 const { clientId, guildId } = require('./json/config.json');
 
 const commandFiles = readdirSync('./commands').filter(file => file.endsWith('.js'));
-const commands = commandFiles.map(file => {
+const commands = commandFiles.filter(f => f !== 'getfile.js').map(file => {
 	console.log(file);
 	const { data } = require(`./commands/${file}`);
 	return data.toJSON();

@@ -15,9 +15,10 @@ function execute(interaction) {
 		.then((containers) => {
 			sendInteractionSelectMenuReply(interaction, containers)
 			.then(({ values }) => {
+				interaction.editReply({ content: `Preparing to stop ${values}`, components:[] });
 				takeActionOnContainer(values, STOP)
-					.then(() => {
-						resolve(`Stopping ${values}`);
+					.then((cn) => {
+						resolve(`${cn} has been stopped`);
 					})
 					.catch(reject);
 			})

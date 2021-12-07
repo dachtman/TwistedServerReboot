@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { sendInteractionSelectMenuReply } = require('../scripts/message');
 const { getMyContainers } = require('../scripts/docker');
-const { ROLES: { ADMIN, PLEEB }, addUser, removeUser } = require('../scripts/users');
+const { ROLES: { ADMIN, PLEEB }, addUser } = require('../scripts/users');
 const name = 'assign';
 const description = 'Assigns user(s) to a docker container with the applicable role';
 const optionsArr = [{

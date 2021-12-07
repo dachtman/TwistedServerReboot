@@ -1,7 +1,13 @@
-const { SlashCommandBuilder, roleMention } = require('@discordjs/builders');
-const { ROLES: { ADMIN, PLEEB }, getRoleName, canUserDoThis } = require('../scripts/users');
-const { DOCKER_ACTIONS : { RESTART }, takeActionOnContainer, getMyContainers } = require('../scripts/docker');
-const { getButtonRow, sendInteractionSelectMenuReply } = require('../scripts/message');
+const { SlashCommandBuilder, roleMention, userMention } = require('@discordjs/builders');
+const { ROLES: { ADMIN, PLEEB }, getRoleName, canUserAccessContainer } = require('../scripts/users');
+const { DOCKER_ACTIONS : { RESTART }, takeActionOnContainer, getAllMyContainers } = require('../scripts/docker');
+const { sendInteractionSelectMenuReply } = require('../scripts/message');
+const moment = require('moment');
+const RESTART_TIME = moment.duration(5, 'minutes');
+const EMOJI_REACTIONS = {
+	THUMBS_UP : '👍',
+	THUMBS_DOWN : '👎',
+};
 const name = 'restart';
 const description = 'Restart of a docker container, requires a vote to restart';
 const data = new SlashCommandBuilder()
@@ -10,12 +16,10 @@ const data = new SlashCommandBuilder()
 function execute(interaction) {
 	return new Promise((resolve, reject) => {
 		const { member:author, guild:{ roles :{ cache } } } = interaction;
-		getMyContainers(author, ADMIN, false).then((containers) => {
+		getAllMyContainers(author).then((containers) => {
 			sendInteractionSelectMenuReply(interaction, containers)
 			.then(({ values }) => {
 				const containerName = values.join('');
-				let yesVotes = [];
-				let noVotes = [];
 				const roles = [getRoleName(containerName, ADMIN), getRoleName(containerName, PLEEB)]
 				.filter((roleName) => {
 					return cache.find(r => r.name === roleName);
@@ -28,56 +32,37 @@ function execute(interaction) {
 					};
 				});
 				if (roles.length !== 0) {
-					interaction.editReply({ content: `${containerName} will be put up for a vote to be restarted`, components:[] });
+					const response = `${containerName} will be restarted ${RESTART_TIME.humanize(true)}`;
+					interaction.editReply({ content:`${response}`, components:[] });
 					interaction.channel.send({
-						content: `${roles.map(r => r.mention).join(' ')} ${containerName} is going to be restarted please vote now`,
-						components:[getButtonRow([{
-							customID : 'yes',
-							label: `Yes (${yesVotes.length})`,
-							style: 'PRIMARY'
-						}, {
-							customID : 'no',
-							label: `No (${noVotes.length})`,
-							style: 'DANGER'
-						}])]
+						content: `${roles.map(r => r.mention).join(' ')} ${response}\nIf you would like to cancel react with a ${EMOJI_REACTIONS.THUMBS_DOWN}`
 					})
-					.then((interactionReply) => {
-						const collector = interactionReply.createMessageComponentCollector({ componentType: 'BUTTON', time:10000 });
-						collector.on('collect', (i) => {
-							const { customId, user: { id: userId }, member, message: { components } } = i;
-							if (canUserDoThis(member, containerName, true)) {
-								const alreadyVotedYes = yesVotes.includes(userId);
-								const alreadyVotedNo = noVotes.includes(userId);
-								if (!alreadyVotedYes || !alreadyVotedNo) {
-									if (customId === 'yes' && !alreadyVotedYes) {
-										yesVotes.push(userId);
-										noVotes = noVotes.filter((v) => v !== userId);
-									}
-									if (customId === 'no' && !alreadyVotedNo) {
-										noVotes.push(userId);
-										yesVotes = yesVotes.filter((v) => v !== userId);
-									}
-									components[0].components[0].setLabel(`Yes (${yesVotes.length})`);
-									components[0].components[1].setLabel(`No (${noVotes.length})`);
-								}
-								i.update({ components });
-							}
-						});
-						collector.on('end', () => {
-							const memberCount = roles.reduce((prevValue, { count }) => {
-								return prevValue + count;
-							}, 0);
-							if (yesVotes.length === memberCount) {
-								takeActionOnContainer(containerName, RESTART)
-									.then(() => {
-										resolve(`Restart started on ${containerName}`);
-									})
-									.catch(reject);
+					.then((interactionMesasge) => {
+						interactionMesasge.react(EMOJI_REACTIONS.THUMBS_DOWN);
+						const filter = (reaction, user) => {
+							return reaction.emoji.name === EMOJI_REACTIONS.THUMBS_DOWN && !user.bot && canUserAccessContainer(containerName, user, reaction);
+						};
+						const collector = interactionMesasge.createReactionCollector({ filter, max: 1, time:RESTART_TIME.asMilliseconds() });
+						collector.on('collect', (reaction, user) => {
+							if (canUserAccessContainer(containerName, user, reaction)) {
+								interactionMesasge.edit({ content: `${containerName} restart will be canceled thanks to ${userMention(user.id)}` });
+								reaction.remove();
 							}
 							else {
-								reject('NO RESTART');
+								interactionMesasge.channel.send({ content: 'Dont be breaking my toys', ephemeral:true });
 							}
-							interactionReply.delete();
+						});
+						collector.on('end', (collected) => {
+							if (collected.size === 0) {
+								interactionMesasge.reactions.removeAll();
+								takeActionOnContainer(containerName, RESTART)
+								.then((cn) => {
+									const containerResponse = `${cn} has restarted. Please enjoy and play for many more hours`;
+									interactionMesasge.edit({ content: containerResponse });
+									resolve(containerResponse);
+								})
+								.catch(reject);
+							}
 						});
 					})
 					.catch(reject);
