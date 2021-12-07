@@ -1,7 +1,8 @@
 {
     "script" : "npm run prodstart",
     "watch" : true,
-    "ignore_watch" : ["log","node_modules"],
+    "log_date_format":"YYYY-MM-DD HH:mm Z",
+    "ignore_watch" : ["log","node_modules",".git"],
     "watch_options":{
         "followSymLinks":true
     },
