@@ -8,7 +8,8 @@
     "start": "node .",
     "deploy" : "node deploy-commands.js",
     "lint": "eslint .",
-    "pm2" : "pm2 start npm --name \"twistedserverreboot\" -- start --watch --ignore-watch=\"node_modules, log\""
+    "pm2" : "pm2 start process.json",
+    "prodstart" : "npm run deploy && npm run start"
   },
   "repository": {
     "type": "git",

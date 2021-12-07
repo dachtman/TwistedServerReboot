@@ -1,5 +1,5 @@
 {
-    "script" : "npm run start",
+    "script" : "npm run prodstart",
     "watch" : true,
     "ignore_watch" : ["log","node_modules"],
     "watch_options":{

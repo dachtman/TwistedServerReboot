@@ -3,7 +3,7 @@ const { ROLES: { ADMIN, PLEEB }, getRoleName, canUserAccessContainer } = require
 const { DOCKER_ACTIONS : { RESTART }, takeActionOnContainer, getAllMyContainers } = require('../scripts/docker');
 const { sendInteractionSelectMenuReply } = require('../scripts/message');
 const moment = require('moment');
-const RESTART_TIME = moment.duration(5, 'minutes');
+const RESTART_TIME = moment.duration(2, 'minutes');
 const EMOJI_REACTIONS = {
 	THUMBS_UP : '👍',
 	THUMBS_DOWN : '👎',
